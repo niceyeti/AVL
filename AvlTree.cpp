@@ -1,16 +1,24 @@
 #include "AvlTree.hpp"
 
 AvlTree::AvlTree()
-{}
+{
+	_root = NULL;
+	_nodeCount = 0;
+}
 
 AvlTree::~AvlTree()
 {
-	DeleteTree(_root);
+	DeleteTree();
 }
 
 void AvlTree::DeleteTree()
 {
 	DeleteSubTree(_root);
+}
+
+bool AvlTree::IsEmpty()
+{
+	return _nodeCount == 0;
 }
 
 void AvlTree::PrintTreeInOrder()
@@ -35,14 +43,13 @@ void AvlTree::PrintTreeBfs()
 	nodeQ.push( pair<TreeNode*,int>(_root,0) );
 	
 	while(!nodeQ.empty()){
-		nodePair = nodeQ.front();
-		nodeQ.pop();
+		pair<TreeNode*,int>& nodePair = nodeQ.front();
 		
-		cout << "  " << nodePair.first->data();
 		if(curDepth < nodePair.second){
 			curDepth = nodePair.second;
 			cout << endl;
 		}
+		cout << "  " << nodePair.first->data();
 		
 		if(nodePair.first->left()){
 			nodeQ.push( pair<TreeNode*, int>( nodePair.first->left(), nodePair.second+1 ) );
@@ -50,6 +57,9 @@ void AvlTree::PrintTreeBfs()
 		if(nodePair.first->right()){
 			nodeQ.push( pair<TreeNode*, int>( nodePair.first->right(), nodePair.second+1 ) );
 		}
+		
+		//pop first in line
+		nodeQ.pop();
 	}
 }
 
@@ -62,6 +72,7 @@ void AvlTree::DeleteSubTree(TreeNode* root)
 	//leaf node, so delete it
 	if(root->right() == NULL && root->left() == NULL){
 		delete root;
+		_nodeCount--;
 	}
 	else{
 		DeleteSubTree(root->left());
@@ -84,13 +95,23 @@ int AvlTree::TreeHeight()
 
 void AvlTree::InsertData(int data)
 {
-	TreeNode * node = new TreeNode(data);
+	TreeNode* node = new TreeNode(data);
 	InsertNode(node);
 }
 
 void AvlTree::InsertNode(TreeNode* node)
 {
-	_insertNode(node, _root);
+	if(_root == NULL){ //empty tree: set _root to node
+		_root = node;
+	}
+	else{
+		_insertNode(node, _root);
+	}
+}
+
+int AvlTree::NodeCount()
+{
+	return _nodeCount;
 }
 
 /*
@@ -101,27 +122,29 @@ after the first successful Rebalance call, no further calls to rebalance need be
 previously balanced up to that point. But I haven't done the proof. This is just programming exercise.
 */
 void AvlTree::_insertNode(TreeNode* node, TreeNode* root)
-{
+{	
 	if(node->data() <= root->data()){
 		if(root->left()){
 			//recurse left
-			InsertNode(node, root->left());
+			_insertNode(node, root->left());
 		}
 		else{
 			root->SetLeft(node);
+			_nodeCount++;
 		}
 	}
 	else{
 		if(root->right()){
 			//recurse right
-			InsertNode(node, root->right());
+			_insertNode(node, root->right());
 		}
 		else{
 			root->SetRight(node);
+			_nodeCount++;
 		}
 	}
 	
-	_rebalanceTree(root); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
+	_rebalance(root); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
 }
 
 //Util for rebalancing from a given root of some subtree

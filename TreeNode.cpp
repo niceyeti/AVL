@@ -37,13 +37,12 @@ void TreeNode::SetLeft(TreeNode* left)
 	_left = left;
 }
 
-void setData(int data)
+void TreeNode::setData(int data)
 {
 	_data = data;
 }
 
-int data()
+int TreeNode::data()
 {
 	return _data;
 }
-
