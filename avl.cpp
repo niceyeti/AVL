@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 	
 	srand(time(NULL));
 	
-	for(int i = 0; i < 6; i++){
+	for(int i = 0; i < 16; i++){
 		tree.InsertData(rand() % 100);
 	}
 	
@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	cout << endl;
 	tree.PrintBfs();
 	
-	tree.PrintPrettyRecursive();
+	//tree.PrintPrettyRecursive();
 	
 	return 0;
 }

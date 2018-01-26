@@ -122,28 +122,31 @@ void AvlTree::PrintPretty()
 	dataWidth = 2;
 	nodeCount = 0;
 	curDepth = 0;
-	lineWidth = (2 << height) * dataWidth + (2 << height) - 1;  //max number of nodes at bottom level, times data width, plus equally divided single spaces between them	
+	lineWidth = (1 << height) * dataWidth + (1 << height) + 1;  //max number of nodes at bottom level, times data width, plus equally divided single spaces between them	
 	
 	cout << "lineWidth: " << lineWidth << "  height: " << height << endl;
 	
-	while(curDepth < height){
+	while(curDepth <= height+1){
 		TreeNode* node = nodeQ.front();
 		nodeQ.pop();
-		
-		if((nodeCount % 2) == 0){
-			cout << endl; //terminate last line
+		nodeCount++;
+
+		//begin the first line of a complete level (which start when nodeCount == 2^i) with padding; recalculate @padSpaces for this level in the tree
+		if((nodeCount & (nodeCount-1)) == 0){
+			if(nodeCount > 1)
+				cout << "<" << endl; //terminate previous line
 			//number of spaces between nodes at this level: spaces equally divided between node data of dataWidth size
-			padSpaces = (lineWidth - ((2 << curDepth) * dataWidth)) / (2 << curDepth);
-			curDepth++;
+			int nodesAtThisLevel = (1 << curDepth);
+			padSpaces = (lineWidth - (nodesAtThisLevel * dataWidth)) / (nodesAtThisLevel+1);
 			//print first pad, which isn't associated with any node
 			for(int i = 0; i < padSpaces; i++)
 				cout << " ";
-			
+			curDepth++;
 		}
 		
-		//print this node's data (if any, spaces if not), with padding
+		//print this node's data (if any, spaces if not), with internal padding
 		if(node){
-			for(int i = 0; i < dataWidth-(node->data() / 10); i++)
+			for(int i = 0; i < (dataWidth - to_string(node->data()).length()); i++)
 				cout << " ";
 			cout << node->data();
 		}
@@ -151,9 +154,11 @@ void AvlTree::PrintPretty()
 			for(int i = 0; i < dataWidth; i++)
 				cout << " ";
 		}
-		//print trailing padding after this node
-		for(int i = 0; i < padSpaces; i++)
+		
+		//print this node's trailing padding
+		for(int i = 0; i < padSpaces; i++){
 			cout << " ";
+		}
 
 		//push items onto q
 		if(node){
@@ -164,11 +169,10 @@ void AvlTree::PrintPretty()
 			nodeQ.push(NULL);
 			nodeQ.push(NULL);
 		}
-		
-		nodeCount++;
 	}
 	
-	cout << endl; //output the final, buffered line
+	cout << "<<< last" <<  endl; //output the final, buffered line
+	cout << "Done pretty" << endl;
 }
 
 void AvlTree::DeleteSubTree(TreeNode* root)
@@ -237,7 +241,7 @@ void AvlTree::_insertNode(TreeNode* node, TreeNode* root)
 		if(root->left()){
 			//recurse left
 			_insertNode(node, root->left());
-			_rebalanceSubTree(root->left(), root->LeftPtrPtr()); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
+			//_rebalanceSubTree(root->left(), root->LeftPtrPtr()); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
 		}
 		else{
 			root->SetLeft(node);
@@ -248,7 +252,7 @@ void AvlTree::_insertNode(TreeNode* node, TreeNode* root)
 		if(root->right()){
 			//recurse right
 			_insertNode(node, root->right());
-			_rebalanceSubTree(root->right(), root->RightPtrPtr()); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
+			//_rebalanceSubTree(root->right(), root->RightPtrPtr()); //see header: node is inserted, then every node along insertion path is rebalanced, if needed
 		}
 		else{
 			root->SetRight(node);
