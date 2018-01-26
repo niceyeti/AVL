@@ -8,11 +8,16 @@ int main(int argc, char** argv)
 	
 	srand(time(NULL));
 	
-	for(int i = 0; i < 7; i++){
-		tree.InsertData(rand() % 10);
+	for(int i = 0; i < 6; i++){
+		tree.InsertData(rand() % 100);
 	}
 	
-	tree.PrintTreeBfs();
+	tree.PrintPretty();
+	
+	cout << endl;
+	tree.PrintBfs();
+	
+	tree.PrintPrettyRecursive();
 	
 	return 0;
 }

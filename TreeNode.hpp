@@ -12,6 +12,8 @@ class TreeNode
 		~TreeNode();
 		TreeNode* right();
 		TreeNode* left();
+		TreeNode** RightPtrPtr();
+		TreeNode** LeftPtrPtr();
 		int data();
 		void setData(int data);
 		void SetLeft(TreeNode* left);

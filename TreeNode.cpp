@@ -27,6 +27,16 @@ TreeNode* TreeNode::left()
 	return _left;
 }
 
+TreeNode** TreeNode::RightPtrPtr()
+{
+	return &_right;
+}
+
+TreeNode** TreeNode::LeftPtrPtr()
+{
+	return &_left;
+}
+
 void TreeNode::SetRight(TreeNode* right)
 {
 	_right = right;
